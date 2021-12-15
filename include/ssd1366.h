@@ -43,4 +43,8 @@
 // Charge Pump (pg.62)
 #define OLED_CMD_SET_CHARGE_PUMP        0x8D    // follow with 0x14
 
+#define BPM_STRING "                \n                \n     BPM: %d    \n                \n                \n                \n                \n                "
+#define PUT_FINGER_STRING "                \n                \n Put your finger\n   on sensor   \n                \n                \n                \n                "
+#define EMPTY_STRING #define BPM_STRING "                \n                \n                \n                \n                \n                \n                \n                "
+
 #endif /* MAIN_SSD1366_H_ */

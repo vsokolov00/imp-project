@@ -1,1 +1,1 @@
-# imp-project
+# IMP - Microprocessors and Embedded Systems
