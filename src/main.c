@@ -42,6 +42,7 @@
 #define I2C_MASTER_TX_BUF_DISABLE   0           /*!< I2C master doesn't need buffer */
 #define I2C_MASTER_RX_BUF_DISABLE   0           /*!< I2C master doesn't need buffer */
 #define MINIMUM_HEART_RATE          33
+#define MAX_STRING_LEN              150
 
 // Project tag for debug output
 static const char *TAG = "Heart beat project";
@@ -188,11 +189,12 @@ int get_bpm() {
 
 void app_main(void)
 {
+    //==================================== INITIALIZATION
     //Initialize the display
     ESP_ERROR_CHECK(i2c_master_init());
     ESP_LOGI(TAG, "I2C initialized successfully");
 	ssd1306_init();
-    char text_to_display[150];
+    char text_to_display[MAX_STRING_LEN];
 
     //Check if Two Point or Vref are burned into eFuse
     check_efuse();
@@ -211,6 +213,8 @@ void app_main(void)
     } else {
         printf("Characterized using Default Vref\n");
     }
+
+    //==================================== PROJECT LOGIC
 
     xTaskCreate(task_ssd1306_display_text, "ssd1306_display_text",  2048, PUT_FINGER_STRING, 6, NULL);
 
@@ -241,7 +245,7 @@ void app_main(void)
        
                         xTaskCreate(task_ssd1306_display_text, "ssd1306_display_text",  2048, PUT_FINGER_STRING, 6, NULL);
                     }
-                } while(curr_bpm < 30);
+                } while(curr_bpm < MINIMUM_HEART_RATE);
             }
 
             bpm_window[idx] = curr_bpm;                     // Add the newest reading to the window
