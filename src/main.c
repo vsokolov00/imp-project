@@ -35,7 +35,7 @@
 
 // Project specific constant values
 #define DEFAULT_VREF            1100
-#define NUMBER_OF_SAMPLES       150
+#define NUMBER_OF_SAMPLES       200
 #define DEFAULT_SENSOR_OUTPUT   1630            // (Vcc / 2) is the default output voltage of the sensor according to the datasheet
 #define BPM_WINDOW_SIZE         5               // Window size of BPM measurements to calcurate the average BPM on
 #define I2C_MASTER_FREQ_HZ      100000
@@ -139,8 +139,8 @@ uint32_t read_sensor_voltage() {
 int get_bpm() {
     // random window size, the heart signal is periodic and we could always cut the same part of the period
     // using the random wndow size the effect of signal cutting is decreased
-    const int top_edge = 65;
-    const int bottom_edge = 55;
+    const int top_edge = 45;
+    const int bottom_edge = 35;
     int samples_number = (esp_random() % (top_edge -bottom_edge + 1)) + bottom_edge;
 
     struct timeval start, stop;
@@ -167,7 +167,7 @@ int get_bpm() {
     int baseline = sum / samples_number;
 
     for (int k = 0; k < samples_number; k++) {
-        if(pulse[k] > baseline && pulse[k] - baseline > 6) {
+        if(pulse[k] > baseline && pulse[k] - baseline > 5) {
             if (peak_value == -1 || pulse[k] > peak_value) {
                 peak_index = k;
                 peak_value = pulse[k];
@@ -226,7 +226,7 @@ void app_main(void)
             bpm_sum = bpm_sum - bpm_window[idx];            // Remove the oldest entry from the sum
             
             curr_bpm = get_bpm();                           // Get current beats per minute rate
-            printf("Curr rate %d\n", curr_bpm);
+            ESP_LOGI(TAG, "Current heart rate is %d\n", curr_bpm); 
 
             if (curr_bpm < MINIMUM_HEART_RATE) {
                 do {
@@ -237,7 +237,7 @@ void app_main(void)
                         bpm_sum = 0;
                         for (int p = 0; p < BPM_WINDOW_SIZE; p++)
                             bpm_window[p] = 0;
-                        ESP_LOGI(TAG, "BPM 0\n");    
+                        ESP_LOGI(TAG, "Current heart rate is 0\n");    
        
                         xTaskCreate(task_ssd1306_display_text, "ssd1306_display_text",  2048, PUT_FINGER_STRING, 6, NULL);
                     }
@@ -257,7 +257,6 @@ void app_main(void)
 
             // Calculate BPM, averaged across last five non-zero measurements
             averaged_pulse = bpm_sum / non_zero;
-            ESP_LOGI(TAG, "Current BPM %d\n", averaged_pulse);
 		    sprintf(text_to_display, BPM_STRING, averaged_pulse);
             xTaskCreate(task_ssd1306_display_text, "ssd1306_display_text",  2048, text_to_display , 6, NULL);
         }//for
