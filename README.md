@@ -4,13 +4,10 @@ Clone and open this repository with PlatformIO VSCode extension and run "Upload 
 
 Video - https://youtu.be/JHA2dlhXHdE
 
-Assessment remarks:
-
-Hodnocení projektu IMP: xsokol15
 
 ================================================================================
 
-Hodnotil: Vaclav Simek (simekv@fit.vutbr.cz)
+Hodnocení projektu IMP
 
 Dokumentace (až 4 b):             4
 
